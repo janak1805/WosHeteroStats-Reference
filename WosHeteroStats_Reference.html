@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WosHeteroStats Quick Reference</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f5f5f5; padding: 20px; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #0071c5; text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+        .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card h2 { color: #0071c5; border-bottom: 2px solid #0071c5; padding-bottom: 8px; margin-bottom: 15px; font-size: 1.2em; }
+        .syntax { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; font-family: 'Consolas', monospace; overflow-x: auto; }
+        .syntax .flag { color: #569cd6; }
+        .syntax .value { color: #ce9178; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f8f8; color: #333; font-weight: 600; }
+        tr:hover { background: #f5f9fc; }
+        .code { font-family: 'Consolas', monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 3px; color: #c7254e; }
+        .highlight { background: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107; margin: 15px 0; }
+        .default-box { background: #e8f4f8; padding: 20px; border-radius: 8px; border: 2px solid #0071c5; }
+        .default-box h3 { color: #0071c5; margin-bottom: 15px; }
+        .topology { font-family: 'Consolas', monospace; background: #2d2d2d; color: #fff; padding: 15px; border-radius: 5px; font-size: 12px; line-height: 1.8; }
+        .topology .big { color: #4fc3f7; }
+        .topology .small { color: #81c784; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 0.85em; font-weight: 600; }
+        .badge-required { background: #ffebee; color: #c62828; }
+        .badge-optional { background: #e8f5e9; color: #2e7d32; }
+        .copy-btn { background: #0071c5; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; float: right; font-size: 0.9em; }
+        .copy-btn:hover { background: #005a9e; }
+        @media print { body { background: white; } .card { box-shadow: none; border: 1px solid #ddd; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 WosHeteroStats Quick Reference</h1>
+        <p class="subtitle">ETW Post-Processing Tool for Hybrid Processor Scheduling Analysis</p>
+
+        <!-- Basic Syntax -->
+        <div class="card">
+            <h2>📋 Basic Command Syntax</h2>
+            <div class="syntax">
+                <span class="flag">WosHeteroStats.exe</span> 
+                <span class="flag">-i</span> <span class="value">&lt;input.etl&gt;</span> 
+                <span class="flag">-o</span> <span class="value">&lt;output.csv&gt;</span> 
+                <span class="flag">-big</span> <span class="value">&lt;mask&gt;</span> 
+                <span class="flag">-small</span> <span class="value">&lt;mask&gt;</span> 
+                <span class="flag">-smt</span> <span class="value">&lt;mask&gt;</span>
+            </div>
+        </div>
+
+        <!-- Flags -->
+        <div class="grid">
+            <div class="card">
+                <h2>🔴 Required Flags</h2>
+                <table>
+                    <tr><th>Flag</th><th>Description</th></tr>
+                    <tr><td><span class="code">-i</span></td><td>Input ETL file path</td></tr>
+                    <tr><td><span class="code">-o</span></td><td>Output CSV file path</td></tr>
+                    <tr><td><span class="code">-big</span></td><td>Big core LP bitmask</td></tr>
+                    <tr><td><span class="code">-small</span></td><td>Small core LP bitmask</td></tr>
+                    <tr><td><span class="code">-smt</span></td><td>HT-enabled LP mask (0x0 if no HT)</td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h2>🟢 Optional Flags</h2>
+                <table>
+                    <tr><th>Flag</th><th>Description</th></tr>
+                    <tr><td><span class="code">-r &lt;start&gt; &lt;end&gt;</span></td><td>Time range (μs)</td></tr>
+                    <tr><td><span class="code">-ignoreParking</span></td><td>If parking disabled</td></tr>
+                    <tr><td><span class="code">-hgsplus</span></td><td>HGS+ stats (ADL+)</td></tr>
+                    <tr><td><span class="code">-PPM</span></td><td>PPM dump CSV</td></tr>
+                    <tr><td><span class="code">-cdie / -socDie</span></td><td>Die masks (MTL)</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Default ARL-S -->
+        <div class="card">
+            <h2>⭐ Default: ARL-S (8 Big + 16 Small, No HT)</h2>
+            <div class="default-box">
+                <h3>LP Topology Map</h3>
+                <div class="topology">
+LP:  23 22 21 20 19 18 17 16 15 14 │ 13 12 11 10 │  9  8  7  6  5  4  3  2 │  1  0
+     ─────────────────────────────   ───────────   ─────────────────────────   ─────
+     <span class="small">        SMALL (8 LPs)        </span>   <span class="big">  BIG (4)  </span>   <span class="small">       SMALL (8 LPs)       </span>   <span class="big">BIG(4)</span>
+                </div>
+                <br>
+                <table>
+                    <tr><th>Core Type</th><th>Hex Mask</th><th>LPs</th></tr>
+                    <tr><td><strong style="color:#4fc3f7">Big</strong></td><td><span class="code">0xC03C03</span></td><td>0-1, 10-13, 22-23</td></tr>
+                    <tr><td><strong style="color:#81c784">Small</strong></td><td><span class="code">0x3FC3FC</span></td><td>2-9, 14-21</td></tr>
+                    <tr><td><strong>SMT</strong></td><td><span class="code">0x0</span></td><td>None (no HT)</td></tr>
+                </table>
+                <br>
+                <div class="syntax" id="arl-cmd">
+WosHeteroStats.exe -i input.etl -o output.csv -big 0xC03C03 -small 0x3FC3FC -smt 0x0
+                </div>
+            </div>
+        </div>
+
+        <!-- Bitmask Calculation -->
+        <div class="card">
+            <h2>🧮 How to Calculate Bitmasks</h2>
+            <div class="highlight">
+                <strong>Each LP = 1 bit position</strong><br>
+                LP0 = bit 0, LP1 = bit 1, LP2 = bit 2... and so on
+            </div>
+            <h3 style="margin: 15px 0 10px;">Example: Big cores at LP 0, 1, 10-13, 22-23</h3>
+            <div class="topology">
+Bit:  23 22 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+       <span class="big">1  1</span>  0  0  0  0  0  0  0  0  <span class="big">1  1  1  1</span>  0  0  0  0  0  0  0  0  <span class="big">1  1</span>
+
+Group into 4-bit nibbles:
+<span class="big">1100</span> 0000 0011 <span class="big">1100</span> 0000 0011
+  C    0    3    C    0    3
+
+<strong>Result: 0xC03C03</strong>
+            </div>
+            <p style="margin-top:15px;"><strong>Tip:</strong> Use Windows Calculator (Programmer mode) to convert binary ↔ hex</p>
+        </div>
+
+        <!-- Other Configs -->
+        <div class="card">
+            <h2>📦 Other Common Configurations</h2>
+            <table>
+                <tr><th>System</th><th>Command Flags</th></tr>
+                <tr>
+                    <td>Homogeneous 8-Core with HT</td>
+                    <td><span class="code">-big 0xFFFF -small 0x0 -smt 0xFFFF</span></td>
+                </tr>
+                <tr>
+                    <td>Hybrid 8B + 8S (HT on Big)</td>
+                    <td><span class="code">-big 0xFFFF -small 0xFF0000 -smt 0xFFFF</span></td>
+                </tr>
+                <tr>
+                    <td>Hybrid 8B + 8S (No HT)</td>
+                    <td><span class="code">-big 0xFF -small 0xFF00 -smt 0x0</span></td>
+                </tr>
+                <tr>
+                    <td>Lakefield (1B + 4S)</td>
+                    <td><span class="code">-big 0x10 -small 0xF -smt 0x0</span></td>
+                </tr>
+                <tr>
+                    <td>Meteor Lake (6B + 8S + 2 SoC)</td>
+                    <td><span class="code">-big 0xffc03 -small 0x3003fc -smt 0xffc03 -cDie 0xFFFFFF -socDie 0x300000</span></td>
+                </tr>
+                <tr>
+                    <td>LNL (4B + 4S)</td>
+                    <td><span class="code">-big 0x0F -small 0xF0 -smt 0x00 -cDie 0xFF -socDie 0x0</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="card">
+            <h2>⚠️ Quick Troubleshooting</h2>
+            <table>
+                <tr><th>Error</th><th>Cause</th><th>Fix</th></tr>
+                <tr>
+                    <td><span class="code">Invalid command line arguments</span></td>
+                    <td>Typo in flags</td>
+                    <td>Check for extra chars like <span class="code">-big 8 -0xFF</span></td>
+                </tr>
+                <tr>
+                    <td>No output / Empty CSV</td>
+                    <td>Wrong mask values</td>
+                    <td>Verify LP positions match your system</td>
+                </tr>
+                <tr>
+                    <td>Missing statistics</td>
+                    <td>ETW provider not captured</td>
+                    <td>Re-trace with CSWITCH provider enabled</td>
+                </tr>
+            </table>
+        </div>
+
+        <p style="text-align:center; color:#666; margin-top:20px; font-size:0.9em;">
+            Intel WosHeteroStats Tool Reference | Print this page (Ctrl+P) to save
+        </p>
+    </div>
+</body>
+</html>
